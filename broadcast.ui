@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>929</width>
-    <height>600</height>
+    <width>1024</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="mouseTracking">
@@ -20,53 +20,178 @@
    <string notr="true">background-color: rgb(255, 255, 255);</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QFrame" name="listFrame">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
     <property name="geometry">
      <rect>
-      <x>629</x>
-      <y>0</y>
-      <width>300</width>
-      <height>300</height>
+      <x>49</x>
+      <y>69</y>
+      <width>851</width>
+      <height>481</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">QPushButton {
-	background-color: rgb(226, 90, 41);
-	selection-background-color: rgb(255, 131, 131);
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 20px;
-    border-color: beige;
-    font: bold 20px;
-    min-width: 10em;
-    padding: 5px;
-}</string>
+     <string notr="true"/>
     </property>
-    <property name="text">
-     <string/>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
     </property>
-    <property name="icon">
-     <iconset resource="../Desktop/서재혁/세종대/4-3/resources.qrc">
-      <normaloff>:/newPrefix/play.png</normaloff>:/newPrefix/play.png</iconset>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
-    <property name="iconSize">
-     <size>
-      <width>170</width>
-      <height>170</height>
-     </size>
-    </property>
+    <widget class="QListWidget" name="listWidget">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>11</y>
+       <width>841</width>
+       <height>421</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 20pt &quot;휴먼둥근헤드라인&quot;;
+background-color: rgb(120, 255, 246);</string>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="dragEnabled">
+      <bool>true</bool>
+     </property>
+     <item>
+      <property name="text">
+       <string>마을 방송입니다</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>마을 방송 내용입니다.</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~입니다</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>오늘의 방송은 ~~ 입니다~</string>
+      </property>
+      <property name="font">
+       <font>
+        <family>휴먼둥근헤드라인</family>
+       </font>
+      </property>
+      <property name="background">
+       <brush brushstyle="NoBrush">
+        <color alpha="255">
+         <red>123</red>
+         <green>194</green>
+         <blue>255</blue>
+        </color>
+       </brush>
+      </property>
+      <property name="foreground">
+       <brush brushstyle="NoBrush">
+        <color alpha="255">
+         <red>0</red>
+         <green>0</green>
+         <blue>0</blue>
+        </color>
+       </brush>
+      </property>
+     </item>
+    </widget>
+    <widget class="QPushButton" name="listClose_btn">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>740</x>
+       <y>450</y>
+       <width>75</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="mouseTracking">
+      <bool>true</bool>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(134, 219, 255);
+border-radius: 10px;</string>
+     </property>
+     <property name="text">
+      <string>닫기</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QFrame" name="mainFrame">
     <property name="geometry">
      <rect>
-      <x>629</x>
-      <y>299</y>
-      <width>300</width>
-      <height>300</height>
+      <x>0</x>
+      <y>0</y>
+      <width>1024</width>
+      <height>768</height>
      </rect>
     </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="broadcastList_btn">
+     <property name="geometry">
+      <rect>
+       <x>674</x>
+       <y>418</y>
+       <width>350</width>
+       <height>350</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
 	background-color: rgb(101, 48, 106);
 	selection-background-color: rgb(255, 131, 131);
     border-style: outset;
@@ -77,58 +202,99 @@
     min-width: 10em;
     padding: 5px;
 }</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="../Desktop/서재혁/세종대/4-3/resources.qrc">
-      <normaloff>:/newPrefix/1178453.png</normaloff>:/newPrefix/1178453.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>170</width>
-      <height>170</height>
-     </size>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_3">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>0</y>
-      <width>300</width>
-      <height>300</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
-	background-color: rgb(225, 49, 45);
-	selection-background-color: rgb(255, 131, 131);
-    border-style: outset;
-    border-width: 2px;
-    border-radius: 20px;
-    border-color: beige;
-    font: bold 20px;
-	image:url(:/newPrefix/call.png);
-	padding: 70px
-}</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton_4">
-    <property name="geometry">
-     <rect>
-      <x>0</x>
-      <y>300</y>
-      <width>300</width>
-      <height>300</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">QPushButton {
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Desktop/서재혁/세종대/4-3/resource/resources.qrc">
+       <normaloff>:/newPrefix/1178453.png</normaloff>:/newPrefix/1178453.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>170</width>
+       <height>170</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="play_label">
+     <property name="geometry">
+      <rect>
+       <x>780</x>
+       <y>50</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:transparent;
+font: 20pt &quot;휴먼둥근헤드라인&quot;;
+color: white;</string>
+     </property>
+     <property name="text">
+      <string>방송 재생</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="name_label">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>450</y>
+       <width>321</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 16pt &quot;HY헤드라인M&quot;;</string>
+     </property>
+     <property name="text">
+      <string>서재혁</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="emergency_label">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>40</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:transparent;
+font: 20pt &quot;휴먼둥근헤드라인&quot;;
+color: white;</string>
+     </property>
+     <property name="text">
+      <string>긴급 호출</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="radio_btn">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>418</y>
+       <width>350</width>
+       <height>350</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
 	background-color: rgb(55, 125, 61);
 	selection-background-color: rgb(255, 131, 131);
     border-style: outset;
@@ -140,161 +306,424 @@
     min-width: 10em;
     padding: 40px;
 }</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>30</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background:transparent;
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="phone_label">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>530</y>
+       <width>321</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 16pt &quot;HY헤드라인M&quot;;</string>
+     </property>
+     <property name="text">
+      <string>010-9370-1524</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="radio_label">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>460</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:transparent;
 font: 20pt &quot;휴먼둥근헤드라인&quot;;
 color: white;</string>
-    </property>
-    <property name="text">
-     <string>긴급 호출</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_2">
-    <property name="geometry">
-     <rect>
-      <x>90</x>
-      <y>330</y>
-      <width>131</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background:transparent;
+     </property>
+     <property name="text">
+      <string>라디오</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="broadcastPlay_btn">
+     <property name="geometry">
+      <rect>
+       <x>674</x>
+       <y>0</y>
+       <width>350</width>
+       <height>350</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(226, 90, 41);
+	selection-background-color: rgb(255, 131, 131);
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 20px;
+    border-color: beige;
+    font: bold 20px;
+    min-width: 10em;
+    padding: 5px;
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset resource="../Desktop/서재혁/세종대/4-3/resource/resources.qrc">
+       <normaloff>:/newPrefix/play.png</normaloff>:/newPrefix/play.png</iconset>
+     </property>
+     <property name="iconSize">
+      <size>
+       <width>170</width>
+       <height>170</height>
+      </size>
+     </property>
+    </widget>
+    <widget class="QLabel" name="personImage_label">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>130</y>
+       <width>321</width>
+       <height>301</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">image: url(:/newPrefix/png-transparent-computer-icons-overseas-development-institute-desktop-wallpaper-share-icon-avatar-removebg-preview.png);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="timeLabel">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>60</y>
+       <width>321</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 18pt &quot;HY헤드라인M&quot;;</string>
+     </property>
+     <property name="text">
+      <string>2022년 5월 10일 오후 4:14</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="AS_label">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>690</y>
+       <width>321</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 11pt &quot;HY헤드라인M&quot;;</string>
+     </property>
+     <property name="text">
+      <string>AS문의 : 000-0000-0000</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="emergency_btn">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>350</width>
+       <height>350</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+	background-color: rgb(225, 49, 45);
+	selection-background-color: rgb(255, 131, 131);
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 20px;
+    border-color: beige;
+    font: bold 20px;
+	image:url(:/newPrefix/call.png);
+	padding: 70px
+}</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="list_label">
+     <property name="geometry">
+      <rect>
+       <x>790</x>
+       <y>450</y>
+       <width>131</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background:transparent;
 font: 20pt &quot;휴먼둥근헤드라인&quot;;
 color: white;</string>
-    </property>
-    <property name="text">
-     <string>라디오</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
+     </property>
+     <property name="text">
+      <string>방송 기록</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <zorder>broadcastList_btn</zorder>
+    <zorder>name_label</zorder>
+    <zorder>radio_btn</zorder>
+    <zorder>phone_label</zorder>
+    <zorder>radio_label</zorder>
+    <zorder>broadcastPlay_btn</zorder>
+    <zorder>personImage_label</zorder>
+    <zorder>timeLabel</zorder>
+    <zorder>AS_label</zorder>
+    <zorder>emergency_btn</zorder>
+    <zorder>list_label</zorder>
+    <zorder>emergency_label</zorder>
+    <zorder>play_label</zorder>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QFrame" name="playFrame">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>30</y>
-      <width>131</width>
-      <height>31</height>
+      <x>250</x>
+      <y>250</y>
+      <width>531</width>
+      <height>281</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background:transparent;
-font: 20pt &quot;휴먼둥근헤드라인&quot;;
-color: white;</string>
+     <string notr="true">background:transparent;</string>
     </property>
-    <property name="text">
-     <string>방송 재생</string>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
+    <widget class="QLabel" name="playing_label">
+     <property name="geometry">
+      <rect>
+       <x>50</x>
+       <y>40</y>
+       <width>431</width>
+       <height>201</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>휴먼둥근헤드라인</family>
+       <pointsize>50</pointsize>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(197, 240, 255);
+border-radius: 20px;
+font: 50pt &quot;휴먼둥근헤드라인&quot;;
+color: rgb(255, 188, 111);</string>
+     </property>
+     <property name="text">
+      <string>재생중</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
    </widget>
-   <widget class="QLabel" name="label_4">
+   <widget class="QFrame" name="loginFrame">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>320</y>
-      <width>131</width>
-      <height>31</height>
+      <x>0</x>
+      <y>0</y>
+      <width>1024</width>
+      <height>768</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QTextEdit" name="login_text">
+     <property name="geometry">
+      <rect>
+       <x>310</x>
+       <y>320</y>
+       <width>371</width>
+       <height>38</height>
+      </rect>
+     </property>
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustIgnored</enum>
+     </property>
+     <property name="html">
+      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Gulim'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt;&quot;&gt;01093701524&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="login_btn">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>400</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(155, 200, 255);
+font: 18pt &quot;휴먼둥근헤드라인&quot;;
+border-radius: 20px</string>
+     </property>
+     <property name="text">
+      <string>로그인</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QFrame" name="radioFrame">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>100</y>
+      <width>891</width>
+      <height>591</height>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background:transparent;
-font: 20pt &quot;휴먼둥근헤드라인&quot;;
-color: white;</string>
+     <string notr="true">background-color: rgb(189, 232, 211);
+border-radius: 20px;</string>
     </property>
-    <property name="text">
-     <string>방송 기록</string>
+    <property name="frameShape">
+     <enum>QFrame::StyledPanel</enum>
     </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
-    <property name="wordWrap">
-     <bool>true</bool>
-    </property>
+    <widget class="QLineEdit" name="lineEdit">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>90</y>
+       <width>241</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(244, 255, 121);
+</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="curFreq_label">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>100</y>
+       <width>141</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 18pt &quot;휴먼둥근헤드라인&quot;;</string>
+     </property>
+     <property name="text">
+      <string>현재 주파수</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="curFrequency">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>160</y>
+       <width>241</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(244, 255, 121);
+font: 18pt &quot;휴먼둥근헤드라인&quot;;</string>
+     </property>
+     <property name="text">
+      <string>95.9</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="freqInput_btn">
+     <property name="geometry">
+      <rect>
+       <x>730</x>
+       <y>90</y>
+       <width>111</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 16pt &quot;휴먼엑스포&quot;;
+background-color: rgb(220, 220, 255);</string>
+     </property>
+     <property name="text">
+      <string>입력</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="radioClose_btn">
+     <property name="geometry">
+      <rect>
+       <x>720</x>
+       <y>510</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 16pt &quot;휴먼엑스포&quot;;
+background-color: rgb(220, 220, 255);</string>
+     </property>
+     <property name="text">
+      <string>닫기</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QLabel" name="label_5">
-    <property name="geometry">
-     <rect>
-      <x>305</x>
-      <y>60</y>
-      <width>321</width>
-      <height>301</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">image: url(:/newPrefix/png-transparent-computer-icons-overseas-development-institute-desktop-wallpaper-share-icon-avatar-removebg-preview.png);</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_6">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>370</y>
-      <width>331</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 16pt &quot;HY헤드라인M&quot;;</string>
-    </property>
-    <property name="text">
-     <string>서재혁</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_7">
-    <property name="geometry">
-     <rect>
-      <x>300</x>
-      <y>440</y>
-      <width>331</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 16pt &quot;HY헤드라인M&quot;;</string>
-    </property>
-    <property name="text">
-     <string>010-9370-1524</string>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
+   <zorder>radioFrame</zorder>
+   <zorder>loginFrame</zorder>
+   <zorder>playFrame</zorder>
+   <zorder>listFrame</zorder>
+   <zorder>mainFrame</zorder>
   </widget>
   <action name="actionaasdf">
    <property name="text">
@@ -303,7 +732,104 @@ color: white;</string>
   </action>
  </widget>
  <resources>
-  <include location="../Desktop/서재혁/세종대/4-3/resources.qrc"/>
+  <include location="../Desktop/서재혁/세종대/4-3/resource/resources.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>broadcastList_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>listFrame</receiver>
+   <slot>raise_()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>848</x>
+     <y>592</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>474</x>
+     <y>309</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>listClose_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>mainFrame</receiver>
+   <slot>raise_()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>826</x>
+     <y>530</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>511</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>login_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>mainFrame</receiver>
+   <slot>raise_()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>500</x>
+     <y>420</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>511</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>broadcastPlay_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>playFrame</receiver>
+   <slot>raise_()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>848</x>
+     <y>174</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>515</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioClose_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>mainFrame</receiver>
+   <slot>raise_()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>850</x>
+     <y>630</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>511</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radio_btn</sender>
+   <signal>clicked()</signal>
+   <receiver>radioFrame</receiver>
+   <slot>raise_()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>174</x>
+     <y>592</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>515</x>
+     <y>395</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
