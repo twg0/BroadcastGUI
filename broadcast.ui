@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>929</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="mouseTracking">
+   <bool>false</bool>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(255, 255, 255);</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QPushButton" name="pushButton">
+    <property name="geometry">
+     <rect>
+      <x>629</x>
+      <y>0</y>
+      <width>300</width>
+      <height>300</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color: rgb(226, 90, 41);
+	selection-background-color: rgb(255, 131, 131);
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 20px;
+    border-color: beige;
+    font: bold 20px;
+    min-width: 10em;
+    padding: 5px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="../Desktop/서재혁/세종대/4-3/resources.qrc">
+      <normaloff>:/newPrefix/play.png</normaloff>:/newPrefix/play.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>170</width>
+      <height>170</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_2">
+    <property name="geometry">
+     <rect>
+      <x>629</x>
+      <y>299</y>
+      <width>300</width>
+      <height>300</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color: rgb(101, 48, 106);
+	selection-background-color: rgb(255, 131, 131);
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 20px;
+    border-color: beige;
+    font: bold 14px;
+    min-width: 10em;
+    padding: 5px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="../Desktop/서재혁/세종대/4-3/resources.qrc">
+      <normaloff>:/newPrefix/1178453.png</normaloff>:/newPrefix/1178453.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>170</width>
+      <height>170</height>
+     </size>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>300</width>
+      <height>300</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color: rgb(225, 49, 45);
+	selection-background-color: rgb(255, 131, 131);
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 20px;
+    border-color: beige;
+    font: bold 20px;
+	image:url(:/newPrefix/call.png);
+	padding: 70px
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>300</y>
+      <width>300</width>
+      <height>300</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton {
+	background-color: rgb(55, 125, 61);
+	selection-background-color: rgb(255, 131, 131);
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 20px;
+    border-color: beige;
+    font: bold 20px;
+	image: url(:/newPrefix/radio.png) 0 0 0 0 stretch stretch;
+    min-width: 10em;
+    padding: 40px;
+}</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>30</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background:transparent;
+font: 20pt &quot;휴먼둥근헤드라인&quot;;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>긴급 호출</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>330</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background:transparent;
+font: 20pt &quot;휴먼둥근헤드라인&quot;;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>라디오</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>30</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background:transparent;
+font: 20pt &quot;휴먼둥근헤드라인&quot;;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>방송 재생</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>320</y>
+      <width>131</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background:transparent;
+font: 20pt &quot;휴먼둥근헤드라인&quot;;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>방송 기록</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>305</x>
+      <y>60</y>
+      <width>321</width>
+      <height>301</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">image: url(:/newPrefix/png-transparent-computer-icons-overseas-development-institute-desktop-wallpaper-share-icon-avatar-removebg-preview.png);</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_6">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>370</y>
+      <width>331</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 16pt &quot;HY헤드라인M&quot;;</string>
+    </property>
+    <property name="text">
+     <string>서재혁</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>440</y>
+      <width>331</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 16pt &quot;HY헤드라인M&quot;;</string>
+    </property>
+    <property name="text">
+     <string>010-9370-1524</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+  <action name="actionaasdf">
+   <property name="text">
+    <string>aasdf</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="../Desktop/서재혁/세종대/4-3/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
