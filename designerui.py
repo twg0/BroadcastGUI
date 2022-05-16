@@ -14,13 +14,35 @@ class MyWindow(QMainWindow, form_class):
         self.ti_count = 5
 
         self.setupUi(self)
+        self.device_id = 10001
 
         self.mainFrame.raise_()
         self.loginFrame.raise_()
 
-        self.name = ""
-        self.phone = "01093701524"
-        self.broadcastContents = []
+        # mqtt 세팅
+        self.pub_topic = "asdf"
+        self.sub_topic = "zxcv"
+        self.phone = ""
+
+        self.broadcastTitle = stack()
+        self.broadcastContents = stack()
+        self.file_id = stack()
+        self.broadcastList = [self.broadcastTitle,self.broadcastContents,self.file_id]
+
+        # 로그인 요청 : SETTING/DEVICE_ID/PHONE_NUMBER
+
+        # 방송 : 송신자/제목/내용/FILE_ID
+
+        # 등록 실패 : SETTING/-1
+        # 등록 성공 : SETTING/DEVICE_ID/USERNAME
+        #
+        # 긴급 호출 : URGENT/DEVICE_ID
+        #
+        # 데이터 : DETECT/DEVICE_ID/온도/습도/진동/가스/이상행동
+        #
+        # 방송 정상 수신 : REPLY/DEVICE_ID/방송 제목/응답 종류/FILE_ID
+        #     응답 종류 0 : 방송 정상 수신 , 응답 종류 1 : 방송 확인
+
 
         # 로그인 페이지
         self.warn_msg.setVisible(False)
@@ -78,10 +100,8 @@ class MyWindow(QMainWindow, form_class):
         self.radioClose_btn.pressed.connect(self.radioClose_btn_pressed)
         self.radioClose_btn.released.connect(self.radioClose_btn_released)
         self.radioClose_btn.clicked.connect(self.radioClose_btn_clicked)
-        # 방송 리스트
-        self.broadcast_list()
 
-        # MQTT
+        # MQTT 1은 sub 2는 pub
         self.client = MqttClient(self)
         self.client.stateChanged.connect(self.on_stateChanged)
         self.client.messageSignal.connect(self.on_messageSignal)
@@ -89,7 +109,6 @@ class MyWindow(QMainWindow, form_class):
         self.client.hostname = "58.124.114.104"
         self.client.connectToHost()
 
-        self.publish_msg("zxcv","on")
 
     # 메인 페이지
     def emergency_btn_pressed(self):
@@ -149,6 +168,12 @@ class MyWindow(QMainWindow, form_class):
 
     def broadcastPlay_btn_clicked(self):
         self.mainFrame.setEnabled(False)
+        if self.broadcastContents.isEmpty() :
+            self.mainFrame.raise_()
+            self.mainFrame.setEnabled(True)
+        else :
+            # TTS
+            self.playFrame.raise_()
 
     def radio_btn_pressed(self):
         self.radio_btn.setStyleSheet("""background-color: #163218;
@@ -199,6 +224,7 @@ class MyWindow(QMainWindow, form_class):
 
     def broadcastList_btn_clicked(self):
         self.mainFrame.setEnabled(False)
+        self.broadcast_list()
 
     def back_to_main(self):
         self.mainFrame.raise_()
@@ -208,15 +234,19 @@ class MyWindow(QMainWindow, form_class):
     def login_btn_clicked(self):
         phone_num = self.lineEdit_2.text()
         if phone_num.isnumeric():
-            if self.phone == phone_num:
-                self.mainFrame.raise_()
-                self.warn_msg.setVisible(False)
-            else:
-                self.warn_msg.setVisible(True)
-                self.warn_msg.setText("번호가 존재하지 않습니다")
+            self.lineEdit_2.setEnabled(False)
+            self.login_btn.setEnabled(False)
+            self.publish_msg("SETTING/{}/{}".format(self.device_id,phone_num))
+            if len(phone_num) == 11:
+                self.phone = phone_num[0:3] + '-' + phone_num[3:7] + '-' + phone_num[7:]
+                print(self.phone)
+            elif len(phone_num) == 10:
+                self.phone = phone_num[0:3] + '-' + phone_num[3:6] + '-' + phone_num[6:] # mqtt를 분석하는 과정으로 전달하는 것이 어렵기 때문에 사용
         else :
             self.warn_msg.setVisible(True)
             self.warn_msg.setText("형식이 올바르지 않습니다")
+            self.lineEdit_2.setEnabled(True)
+            self.login_btn.setEnabled(True)
 
     def login_btn_pressed(self):
         self.login_btn.setStyleSheet("""background-color: #6d8db4;
@@ -236,6 +266,7 @@ border-radius: 20px""")
             self.mainFrame.raise_()
             self.ti_count = 5
             self.countdown.setText(str(self.ti_count))
+            self.publish_msg("URGENT/{}".format(self.device_id))
 
     def time_count(self):
         self.ti_count -= 1
@@ -294,7 +325,7 @@ border-radius: 20px""")
     def freqInput_clicked(self):
         pass
 
-    def radioClose_btn_pressed(self): #9b9bb4
+    def radioClose_btn_pressed(self):
         self.radioClose_btn.setStyleSheet("""background-color: #9b9bb4;
         font: 16pt "휴먼엑스포";""")
 
@@ -307,21 +338,15 @@ border-radius: 20px""")
 
     # 방송 리스트
     def broadcast_list(self):
+        length = self.broadcastTitle.getLength()
+        if length == 0:
+            pass
         # Create QListWidget
-        for index, name in [
-            ('22년 5월 16일', '마을 방송입니다~~~'),
-            ('22년 5월 15일', '마을 방송입니다~~~'),
-            ('22년 5월 14일', '마을 방송입니다~~~'),
-            ('22년 5월 13일', '마을 방송입니다~~~'),
-            ('22년 5월 12일', '마을 방송입니다~~~'),
-            ('22년 5월 11일', '마을 방송입니다~~~'),
-            ('22년 5월 10일', '마을 방송입니다~~~'),
-            ('22년 5월 9일', '마을 방송입니다~~~'),
-            ('22년 5월 8일', '마을 방송입니다~~~')]:
+        for title_num in range(0,length):
             # Create QCustomQWidget
             myQCustomQWidget = QCustomQWidget()
-            myQCustomQWidget.setTextUp(index)
-            myQCustomQWidget.setTextDown(name)
+            myQCustomQWidget.setTextUp(str(self.broadcastTitle.getPop()))
+            myQCustomQWidget.setTextDown(str(self.broadcastContents.getPop()))
             # Create QListWidgetItem
             myQListWidgetItem = QtWidgets.QListWidgetItem(self.listWidget)  # QtWidgets
             # Set size hint
@@ -330,23 +355,41 @@ border-radius: 20px""")
             self.listWidget.addItem(myQListWidgetItem)
             self.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
 
-#MQTT
+
+    # MQTT - sub and sub_msg
     @QtCore.pyqtSlot(int)
     def on_stateChanged(self, state):
         if state == MqttClient.Connected:
             print(state)
-            self.client.subscribe("asdf")
+            self.client.subscribe(self.sub_topic)
 
     @QtCore.pyqtSlot(str)
     def on_messageSignal(self, msg):
-        try:
-            print("--")
-            print(msg)
-        except ValueError:
-            print("error: Not is number")
+        listedMsg = msg.split('/')
+        if listedMsg[0] == "SETTING":
+            if listedMsg[1] == "-1":
+                self.warn_msg.setVisible(True)
+                self.warn_msg.setText("번호가 존재하지 않습니다")
+                self.lineEdit_2.setEnabled(True)
+                self.login_btn.setEnabled(True)
+            else :
+                self.name_label.setText(listedMsg[2])
+                self.phone_label.setText(self.phone)
+                self.mainFrame.raise_()
+                self.warn_msg.setVisible(False)
+                self.lineEdit_2.setEnabled(True)
+                self.login_btn.setEnabled(True)
+        elif listedMsg[0] == "URGENT":
+            pass
+        elif listedMsg[0] == "MASTER":
+            self.broadcastTitle.push(listedMsg[1])
+            self.broadcastContents.push(listedMsg[2])
+            self.file_id.push(listedMsg[3])
+        else :
+            pass
 
-    def publish_msg(self,topic,msg):
-        self.client.publish(topic,msg)
+    def publish_msg(self,msg):
+        self.client.publish(self.pub_topic,msg)
 
 # 방송 리스트
 class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
@@ -379,6 +422,29 @@ class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
 
     def setTextDown (self, text):
         self.textDownQLabel.setText(text)
+
+class stack:
+    def __init__(self):
+        self.items =[]
+        self.length = 0
+    def push(self,item):
+        self.length += 1
+        self.items.append(item)
+    def pop(self):
+        self.length -= 1
+        return self.items.pop()
+    def getPop(self):
+        item = self.pop()
+        self.push(item)
+        return item
+    def peek(self):
+        return self[0]
+    def isEmpty(self):
+        if self.length == 0 :
+            return 1
+        else: return 0
+    def getLength(self):
+        return self.length
 
 # MQTT
 class MqttClient(QtCore.QObject):
@@ -505,8 +571,8 @@ class MqttClient(QtCore.QObject):
     #################################################################
     # callbacks
     def on_message(self, mqttc, obj, msg):
-        mstr = msg.payload.decode("ascii")
-        # print("on_message", mstr, obj, mqttc)
+        mstr = msg.payload.decode("euc-kr")
+        print("on_message", mstr, obj, mqttc)
         self.messageSignal.emit(mstr)
 
     def on_connect(self, *args):
