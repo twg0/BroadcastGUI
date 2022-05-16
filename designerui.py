@@ -4,7 +4,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtGui, QtWidgets, QtCore
 import paho.mqtt.client as mqtt
-import multiprocessing
 
 form_class = uic.loadUiType("broadcast.ui")[0]
 
@@ -87,9 +86,10 @@ class MyWindow(QMainWindow, form_class):
         self.client.stateChanged.connect(self.on_stateChanged)
         self.client.messageSignal.connect(self.on_messageSignal)
 
-        self.client.hostname = "58.124.114.104:1883"
+        self.client.hostname = "58.124.114.104"
         self.client.connectToHost()
 
+        self.publish_msg("zxcv","on")
 
     # 메인 페이지
     def emergency_btn_pressed(self):
@@ -335,15 +335,18 @@ border-radius: 20px""")
     def on_stateChanged(self, state):
         if state == MqttClient.Connected:
             print(state)
-            self.client.subscribe("shok2")
+            self.client.subscribe("asdf")
 
     @QtCore.pyqtSlot(str)
     def on_messageSignal(self, msg):
         try:
-            val = float(msg)
-            self.lcd_number.display(val)
+            print("--")
+            print(msg)
         except ValueError:
             print("error: Not is number")
+
+    def publish_msg(self,topic,msg):
+        self.client.publish(topic,msg)
 
 # 방송 리스트
 class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
@@ -495,6 +498,9 @@ class MqttClient(QtCore.QObject):
     def subscribe(self, path):
         if self.state == MqttClient.Connected:
             self.m_client.subscribe(path)
+
+    def publish(self, topic,payload=None,qos=0,retain=False):
+        self.m_client.publish(topic,payload,qos,retain)
 
     #################################################################
     # callbacks
