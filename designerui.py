@@ -1,14 +1,12 @@
 import sys
 import time
 from PyQt5.QtCore import *
-import asyncio
-
 from PyQt5.QtWidgets import *
-from PyQt5 import uic
+from PyQt5 import uic, QtGui, QtWidgets, QtCore
+import paho.mqtt.client as mqtt
 import multiprocessing
 
 form_class = uic.loadUiType("broadcast.ui")[0]
-
 
 class MyWindow(QMainWindow, form_class):
     def __init__(self):
@@ -77,6 +75,21 @@ class MyWindow(QMainWindow, form_class):
         self.freqInput_btn.pressed.connect(self.freqInput_pressed)
         self.freqInput_btn.released.connect(self.freqInput_released)
         self.freqInput_btn.clicked.connect(self.freqInput_clicked)
+
+        self.radioClose_btn.pressed.connect(self.radioClose_btn_pressed)
+        self.radioClose_btn.released.connect(self.radioClose_btn_released)
+        self.radioClose_btn.clicked.connect(self.radioClose_btn_clicked)
+        # 방송 리스트
+        self.broadcast_list()
+
+        # MQTT
+        self.client = MqttClient(self)
+        self.client.stateChanged.connect(self.on_stateChanged)
+        self.client.messageSignal.connect(self.on_messageSignal)
+
+        self.client.hostname = "58.124.114.104:1883"
+        self.client.connectToHost()
+
 
     # 메인 페이지
     def emergency_btn_pressed(self):
@@ -271,14 +284,234 @@ border-radius: 20px""")
         pass
 
     def freqInput_pressed(self):
-        self.freqInput_btn.setStyleSheet("""background-color: #adadc8;""")
+        self.freqInput_btn.setStyleSheet("""background-color: #adadc8;
+        font: 16pt "휴먼엑스포";""")
 
     def freqInput_released(self):
-        self.freqInput_btn.setStyleSheet("""background-color: rgb(220, 220, 255);""")
+        self.freqInput_btn.setStyleSheet("""background-color: rgb(220, 220, 255);
+        font: 16pt "휴먼엑스포";""")
 
     def freqInput_clicked(self):
         pass
 
+    def radioClose_btn_pressed(self): #9b9bb4
+        self.radioClose_btn.setStyleSheet("""background-color: #9b9bb4;
+        font: 16pt "휴먼엑스포";""")
+
+    def radioClose_btn_released(self):
+        self.radioClose_btn.setStyleSheet("""background-color: rgb(220, 220, 255);
+        font: 16pt "휴먼엑스포";""")
+
+    def radioClose_btn_clicked(self):
+        pass
+
+    # 방송 리스트
+    def broadcast_list(self):
+        # Create QListWidget
+        for index, name in [
+            ('22년 5월 16일', '마을 방송입니다~~~'),
+            ('22년 5월 15일', '마을 방송입니다~~~'),
+            ('22년 5월 14일', '마을 방송입니다~~~'),
+            ('22년 5월 13일', '마을 방송입니다~~~'),
+            ('22년 5월 12일', '마을 방송입니다~~~'),
+            ('22년 5월 11일', '마을 방송입니다~~~'),
+            ('22년 5월 10일', '마을 방송입니다~~~'),
+            ('22년 5월 9일', '마을 방송입니다~~~'),
+            ('22년 5월 8일', '마을 방송입니다~~~')]:
+            # Create QCustomQWidget
+            myQCustomQWidget = QCustomQWidget()
+            myQCustomQWidget.setTextUp(index)
+            myQCustomQWidget.setTextDown(name)
+            # Create QListWidgetItem
+            myQListWidgetItem = QtWidgets.QListWidgetItem(self.listWidget)  # QtWidgets
+            # Set size hint
+            myQListWidgetItem.setSizeHint(myQCustomQWidget.sizeHint())
+            # Add QListWidgetItem into QListWidget
+            self.listWidget.addItem(myQListWidgetItem)
+            self.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
+
+#MQTT
+    @QtCore.pyqtSlot(int)
+    def on_stateChanged(self, state):
+        if state == MqttClient.Connected:
+            print(state)
+            self.client.subscribe("shok2")
+
+    @QtCore.pyqtSlot(str)
+    def on_messageSignal(self, msg):
+        try:
+            val = float(msg)
+            self.lcd_number.display(val)
+        except ValueError:
+            print("error: Not is number")
+
+# 방송 리스트
+class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
+    def __init__ (self, parent = None):
+        super(QCustomQWidget, self).__init__(parent)
+        self.textQVBoxLayout = QtWidgets.QVBoxLayout()          # QtWidgets
+        self.textUpQLabel    = QtWidgets.QLabel()               # QtWidgets
+        self.textDownQLabel  = QtWidgets.QLabel()               # QtWidgets
+        self.textQVBoxLayout.addWidget(self.textUpQLabel)
+        self.textQVBoxLayout.addWidget(self.textDownQLabel)
+        self.allQHBoxLayout  = QtWidgets.QHBoxLayout()          # QtWidgets
+        self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
+        self.setLayout(self.allQHBoxLayout)
+        # setStyleSheet
+        self.textUpQLabel.setStyleSheet('''
+            color: rgb(0, 0, 0);
+            border: 0px;
+            font : 75 20pt "맑은 고딕";
+            background: transparent;
+        ''')
+        self.textDownQLabel.setStyleSheet('''
+            color: rgb(0, 0, 0);
+            border: 0px;
+            font : 20px "맑은 고딕";
+            background: transparent;
+        ''')
+
+    def setTextUp (self, text):
+        self.textUpQLabel.setText(text)
+
+    def setTextDown (self, text):
+        self.textDownQLabel.setText(text)
+
+# MQTT
+class MqttClient(QtCore.QObject):
+    Disconnected = 0
+    Connecting = 1
+    Connected = 2
+
+    MQTT_3_1 = mqtt.MQTTv31
+    MQTT_3_1_1 = mqtt.MQTTv311
+
+    connected = QtCore.pyqtSignal()
+    disconnected = QtCore.pyqtSignal()
+
+    stateChanged = QtCore.pyqtSignal(int)
+    hostnameChanged = QtCore.pyqtSignal(str)
+    portChanged = QtCore.pyqtSignal(int)
+    keepAliveChanged = QtCore.pyqtSignal(int)
+    cleanSessionChanged = QtCore.pyqtSignal(bool)
+    protocolVersionChanged = QtCore.pyqtSignal(int)
+
+    messageSignal = QtCore.pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super(MqttClient, self).__init__(parent)
+
+        self.m_hostname = ""
+        self.m_port = 1883
+        self.m_keepAlive = 60
+        self.m_cleanSession = True
+        self.m_protocolVersion = MqttClient.MQTT_3_1
+
+        self.m_state = MqttClient.Disconnected
+
+        self.m_client =  mqtt.Client(clean_session=self.m_cleanSession, protocol=self.protocolVersion)
+
+        self.m_client.on_connect = self.on_connect
+        self.m_client.on_message = self.on_message
+        self.m_client.on_disconnect = self.on_disconnect
+
+
+    @QtCore.pyqtProperty(int, notify=stateChanged)
+    def state(self):
+        return self.m_state
+
+    @state.setter
+    def state(self, state):
+        if self.m_state == state: return
+        self.m_state = state
+        self.stateChanged.emit(state)
+
+    @QtCore.pyqtProperty(str, notify=hostnameChanged)
+    def hostname(self):
+        return self.m_hostname
+
+    @hostname.setter
+    def hostname(self, hostname):
+        if self.m_hostname == hostname: return
+        self.m_hostname = hostname
+        self.hostnameChanged.emit(hostname)
+
+    @QtCore.pyqtProperty(int, notify=portChanged)
+    def port(self):
+        return self.m_port
+
+    @port.setter
+    def port(self, port):
+        if self.m_port == port: return
+        self.m_port = port
+        self.portChanged.emit(port)
+
+    @QtCore.pyqtProperty(int, notify=keepAliveChanged)
+    def keepAlive(self):
+        return self.m_keepAlive
+
+    @keepAlive.setter
+    def keepAlive(self, keepAlive):
+        if self.m_keepAlive == keepAlive: return
+        self.m_keepAlive = keepAlive
+        self.keepAliveChanged.emit(keepAlive)
+
+    @QtCore.pyqtProperty(bool, notify=cleanSessionChanged)
+    def cleanSession(self):
+        return self.m_cleanSession
+
+    @cleanSession.setter
+    def cleanSession(self, cleanSession):
+        if self.m_cleanSession == cleanSession: return
+        self.m_cleanSession = cleanSession
+        self.cleanSessionChanged.emit(cleanSession)
+
+    @QtCore.pyqtProperty(int, notify=protocolVersionChanged)
+    def protocolVersion(self):
+        return self.m_protocolVersion
+
+    @protocolVersion.setter
+    def protocolVersion(self, protocolVersion):
+        if self.m_protocolVersion == protocolVersion: return
+        if protocolVersion in (MqttClient.MQTT_3_1, self.MQTT_3_1_1):
+            self.m_protocolVersion = protocolVersion
+            self.protocolVersionChanged.emit(protocolVersion)
+
+    #################################################################
+    @QtCore.pyqtSlot()
+    def connectToHost(self):
+        if self.m_hostname:
+            self.m_client.connect(self.m_hostname,
+                port=self.port,
+                keepalive=self.keepAlive)
+
+            self.state = MqttClient.Connecting
+            self.m_client.loop_start()
+
+    @QtCore.pyqtSlot()
+    def disconnectFromHost(self):
+        self.m_client.disconnect()
+
+    def subscribe(self, path):
+        if self.state == MqttClient.Connected:
+            self.m_client.subscribe(path)
+
+    #################################################################
+    # callbacks
+    def on_message(self, mqttc, obj, msg):
+        mstr = msg.payload.decode("ascii")
+        # print("on_message", mstr, obj, mqttc)
+        self.messageSignal.emit(mstr)
+
+    def on_connect(self, *args):
+        # print("on_connect", args)
+        self.state = MqttClient.Connected
+        self.connected.emit()
+
+    def on_disconnect(self, *args):
+        # print("on_disconnect", args)
+        self.state = MqttClient.Disconnected
+        self.disconnected.emit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

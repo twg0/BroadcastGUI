@@ -66,6 +66,16 @@ border-radius: 10px;</string>
       <string>닫기</string>
      </property>
     </widget>
+    <widget class="QListWidget" name="listWidget">
+     <property name="geometry">
+      <rect>
+       <x>15</x>
+       <y>21</y>
+       <width>881</width>
+       <height>501</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QFrame" name="mainFrame">
     <property name="geometry">
@@ -1001,9 +1011,9 @@ color: rgb(255, 255, 255);</string>
    <zorder>loginFrame</zorder>
    <zorder>playFrame</zorder>
    <zorder>radioFrame</zorder>
-   <zorder>listFrame</zorder>
    <zorder>emerFrame</zorder>
    <zorder>mainFrame</zorder>
+   <zorder>listFrame</zorder>
   </widget>
   <action name="actionaasdf">
    <property name="text">
