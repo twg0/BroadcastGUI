@@ -461,6 +461,11 @@ border-radius: 20px""")
     def publish_msg(self, msg):
         self.client.publish(self.pub_topic, msg)
 
+    # 종료 이벤트
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_Escape:
+            self.close()
+
 
 # 방송 리스트
 class QCustomQWidget(QtWidgets.QWidget):  # QtWidgets
@@ -663,5 +668,5 @@ class MqttClient(QtCore.QObject):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myWindow = MyWindow()
-    myWindow.show()
+    myWindow.showFullScreen()
     app.exec_()
