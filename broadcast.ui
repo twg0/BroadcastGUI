@@ -100,7 +100,7 @@ background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.516949, y2:1, s
       </property>
       <property name="styleSheet">
        <string notr="true">background:transparent;
-border: 2px solid black;
+border: 2px solid white;
 font: 75 22pt &quot;맑은 고딕&quot;;</string>
       </property>
       <property name="text">
@@ -113,18 +113,45 @@ font: 75 22pt &quot;맑은 고딕&quot;;</string>
         <x>20</x>
         <y>80</y>
         <width>791</width>
-        <height>231</height>
+        <height>191</height>
        </rect>
       </property>
       <property name="styleSheet">
        <string notr="true">background:transparent;
-border: 2px solid black;
+border: 2px solid white;
 font: 75 20pt &quot;맑은 고딕&quot;;</string>
       </property>
       <property name="text">
        <string>TextLabel</string>
       </property>
      </widget>
+     <widget class="QPushButton" name="widget_close">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>690</x>
+        <y>280</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="mouseTracking">
+       <bool>true</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(134, 219, 255);
+border-radius: 10px;
+border: 2px solid black;</string>
+      </property>
+      <property name="text">
+       <string>닫기</string>
+      </property>
+     </widget>
+     <zorder>listContent</zorder>
+     <zorder>listTitle</zorder>
+     <zorder>widget_close</zorder>
     </widget>
    </widget>
    <widget class="QFrame" name="mainFrame">
@@ -473,6 +500,95 @@ image: url(:/newPrefix/green.png);</string>
       <string/>
      </property>
     </widget>
+    <widget class="QWidget" name="widget_2" native="true">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>130</y>
+       <width>701</width>
+       <height>501</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 rgba(230, 255, 206, 255), stop:1 rgba(255, 255, 255, 255));
+border-radius: 20px;
+border: 1px solid black;</string>
+     </property>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>661</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 3px solid white;
+font: 80 20pt &quot;맑은 고딕&quot;;</string>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>100</y>
+        <width>661</width>
+        <height>321</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border:3px solid white;
+font: 16pt &quot;맑은 고딕&quot;;</string>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+      <property name="wordWrap">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>440</y>
+        <width>71</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">border: 0px;
+background:transparent;
+font: 75 25pt &quot;맑은 고딕&quot;;</string>
+      </property>
+      <property name="text">
+       <string>1/4</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton">
+      <property name="geometry">
+       <rect>
+        <x>290</x>
+        <y>440</y>
+        <width>121</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>확인</string>
+      </property>
+     </widget>
+    </widget>
     <zorder>broadcastList_btn</zorder>
     <zorder>name_label</zorder>
     <zorder>radio_btn</zorder>
@@ -487,6 +603,7 @@ image: url(:/newPrefix/green.png);</string>
     <zorder>emergency_label</zorder>
     <zorder>play_label</zorder>
     <zorder>network_sig</zorder>
+    <zorder>widget_2</zorder>
    </widget>
    <widget class="QFrame" name="playFrame">
     <property name="geometry">
@@ -1128,12 +1245,12 @@ background-color: #ffffff;</string>
      </property>
     </widget>
    </widget>
-   <zorder>listFrame</zorder>
    <zorder>emerFrame</zorder>
    <zorder>loginFrame</zorder>
    <zorder>playFrame</zorder>
-   <zorder>mainFrame</zorder>
    <zorder>radioFrame</zorder>
+   <zorder>listFrame</zorder>
+   <zorder>mainFrame</zorder>
   </widget>
   <action name="actionaasdf">
    <property name="text">
