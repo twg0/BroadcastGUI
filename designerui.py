@@ -2,8 +2,6 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtGui, QtWidgets, QtCore
-from google.cloud import texttospeech
-from google.oauth2 import service_account
 import paho.mqtt.client as mqtt
 import pygame
 
@@ -127,11 +125,6 @@ class MyWindow(QMainWindow, form_class):
         self.client.connectToHost()
 
 
-        # 방송 재생 TTS setting
-        credentials = service_account.Credentials.from_service_account_file(
-            'C:/Users/quokka/Desktop/서재혁/세종대/4-3/tough-bindery-350503-a801cd823b8f.json')
-        # Instantiates a client
-        self.client_tts = texttospeech.TextToSpeechClient(credentials=credentials)
 
         # 메인 페이지
 
@@ -295,32 +288,7 @@ border-radius: 20px""")
 
     # TTS 재생 세팅 함수
     def setting_tts(self):
-        # Set the text input to be synthesized
-        self.synthesis_input_tts = texttospeech.SynthesisInput(
-            text="{} {}".format(self.broadcastTitle.getItem(0), self.broadcastContents.getItem(0)))
-
-        # Build the voice request, select the language code ("en-US") and the ssml
-        # voice gender ("neutral")
-        self.voice_tts = texttospeech.VoiceSelectionParams(
-            language_code="ko-KR", ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
-        )
-
-        # Select the type of audio file you want returned
-        self.audio_config_tts = texttospeech.AudioConfig(
-            audio_encoding=texttospeech.AudioEncoding.MP3
-        )
-
-        # Perform the text-to-speech request on the text input with the selected
-        # voice parameters and audio file type
-        self.response_tts = self.client_tts.synthesize_speech(
-            input=self.synthesis_input_tts, voice=self.voice_tts, audio_config=self.audio_config_tts
-        )
-
-        # The response's audio_content is binary.
-        with open("output.mp3", "wb") as out:
-            # Write the response to the output file.
-            out.write(self.response_tts.audio_content)
-            print('Audio content written to file "output.mp3"')
+        pass
 
     # 긴급 호출 타이머
     def timeout(self):
