@@ -50,9 +50,6 @@ class MyWindow(QMainWindow, form_class):
         # 방송 정상 수신 : REPLY/DEVICE_ID/방송 제목/응답 종류/FILE_ID
         #     응답 종류 0 : 방송 정상 수신 , 응답 종류 1 : 방송 확인
 
-        # play
-        # set GOOGLE_APPLICATION_CREDENTIALS=C:\Users\quokka\Desktop\서재혁\세종대\4-3\tough-bindery-350503-a801cd823b8f.json
-
         # 로그인 페이지
         self.warn_msg.setVisible(False)
         self.login_btn.pressed.connect(self.login_btn_pressed)
@@ -91,6 +88,9 @@ class MyWindow(QMainWindow, form_class):
         self.dataTimer.timeout.connect(self.dataInfo)
         self.dataTimer.start()
 
+        # 리스트
+        self.listWidget.itemClicked.connect(self.listItem_clicked)
+
         # 라디오
         self.Inc1.pressed.connect(self.Inc1_btn_pressed)
         self.Inc1.released.connect(self.Inc1_btn_released)
@@ -124,10 +124,7 @@ class MyWindow(QMainWindow, form_class):
         self.client.hostname = "58.124.114.104"
         self.client.connectToHost()
 
-
-
-        # 메인 페이지
-
+    # 메인 페이지
     def emergency_btn_pressed(self):
         self.emerFrame.raise_()
         self.emergency_btn.setStyleSheet("""background-color: #962321;
@@ -391,6 +388,8 @@ border-radius: 20px""")
             self.listWidget.addItem(myQListWidgetItem)
             self.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
 
+    def listItem_clicked(self):
+        pass
     # MQTT - sub and sub_msg
     @QtCore.pyqtSlot(int)
     def on_stateChanged(self, state):
