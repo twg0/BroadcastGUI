@@ -2,10 +2,14 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtGui, QtWidgets, QtCore
+import boto3
 import paho.mqtt.client as mqtt
 import pygame
+import radio
+#import sensorModule as ssM
 
 form_class = uic.loadUiType("broadcast.ui")[0]
+
 
 
 class MyWindow(QMainWindow, form_class):
@@ -50,6 +54,12 @@ class MyWindow(QMainWindow, form_class):
         # 방송 정상 수신 : REPLY/DEVICE_ID/방송 제목/응답 종류/FILE_ID
         #     응답 종류 0 : 방송 정상 수신 , 응답 종류 1 : 방송 확인
 
+        # tts setting
+        self.polly_client = boto3.Session(
+                aws_access_key_id="AKIASR5CL7KFTUVNMJ4F",
+            aws_secret_access_key="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",
+            region_name='us-west-2').client('polly')
+        
         # 로그인 페이지
         self.warn_msg.setVisible(False)
         self.login_btn.pressed.connect(self.login_btn_pressed)
@@ -86,7 +96,7 @@ class MyWindow(QMainWindow, form_class):
         self.dataTimer = QTimer(self)
         self.dataTimer.setInterval(10000)
         self.dataTimer.timeout.connect(self.dataInfo)
-        self.dataTimer.start()
+        
 
         # 리스트
         self.listWidget.itemClicked.connect(self.listItem_clicked)
@@ -114,7 +124,7 @@ class MyWindow(QMainWindow, form_class):
 
         self.radioClose_btn.pressed.connect(self.radioClose_btn_pressed)
         self.radioClose_btn.released.connect(self.radioClose_btn_released)
-        self.radioClose_btn.clicked.connect(self.radioClose_btn_clicked)
+        self.radioClose_btn.clicked.connect(self.radio_cancel)
 
         # MQTT 1은 sub 2는 pub
         self.client = MqttClient(self)
@@ -188,7 +198,7 @@ class MyWindow(QMainWindow, form_class):
             self.mainFrame.setEnabled(True)
         else:
             # TTS
-            pygame.mixer.init(16000, -16, 1, 2048)
+            pygame.mixer.init()
             pygame.mixer.music.load("output.mp3")
             pygame.mixer.music.play()
 
@@ -219,6 +229,12 @@ class MyWindow(QMainWindow, form_class):
     def radio_btn_clicked(self):
         self.mainFrame.setEnabled(False)
         self.radioFrame.raise_()
+        radio.radio_start()
+        
+    def radio_cancel(self):
+        radio.mute()
+        self.mainFrame.setEnabled(True)
+        self.mainFrame.raise_()
 
     def broadcastList_btn_pressed(self):
         self.broadcastList_btn.setStyleSheet("""background-color: #2f1632;
@@ -285,7 +301,11 @@ border-radius: 20px""")
 
     # TTS 재생 세팅 함수
     def setting_tts(self):
-        pass
+        response = self.polly_client.synthesize_speech(VoiceId='Seoyeon',
+                OutputFormat='mp3',
+                Text = "{}/{}".format(self.broadcastTitle.getItem(0),self.broadcastContents.getItem(0)))
+        file = open('output.mp3','wb')
+        file.write(response['AudioStream'].read())
 
     # 긴급 호출 타이머
     def timeout(self):
@@ -293,6 +313,7 @@ border-radius: 20px""")
         if i == 0:
             self.timer.stop()
             self.mainFrame.raise_()
+            self.mainFrame.setEnabled(True)
             self.ti_count = 5
             self.countdown.setText(str(self.ti_count))
             self.publish_msg("URGENT/{}".format(self.device_id))
@@ -304,33 +325,38 @@ border-radius: 20px""")
 
     # 데이터 전송 타이머
     def dataInfo(self):
+#         result = ssM.sensor()
+#         self.tem = result[0]
+#         self.hum = result[1]
+#         self.gas = result[2]
         self.publish_msg(
             "DETECT/{}/{}/{}/{}/{}/{}".format(self.device_id, self.tem, self.hum, self.vib, self.gas, self.strange))
 
     # 라디오
+    
     def Inc1_btn_pressed(self):
-        self.Inc1.setStyleSheet("""background-color: #b4ae95;""")
+        self.Inc1.setStyleSheet("""background-color: #b4b4b4;""")
 
     def Inc1_btn_released(self):
-        self.Inc1.setStyleSheet("""background-color: rgb(255, 247, 211);""")
+        self.Inc1.setStyleSheet("""background-color: #ffffff;""")
 
     def inc_1_btn_pressed(self):
-        self.inc_1.setStyleSheet("""background-color: #b4ae95;""")
+        self.inc_1.setStyleSheet("""background-color: #b4b4b4;""")
 
     def inc_1_btn_released(self):
-        self.inc_1.setStyleSheet("""background-color: rgb(255, 247, 211);""")
+        self.inc_1.setStyleSheet("""background-color: #ffffff;""")
 
     def dec1_btn_pressed(self):
-        self.dec1.setStyleSheet("""background-color: #b4ae95;""")
+        self.dec1.setStyleSheet("""background-color: #b4b4b4;""")
 
     def dec1_btn_released(self):
-        self.dec1.setStyleSheet("""background-color: rgb(255, 247, 211);""")
+        self.dec1.setStyleSheet("""background-color: #ffffff;""")
 
     def dec_1_btn_pressed(self):
-        self.dec_1.setStyleSheet("""background-color: #b4ae95;""")
+        self.dec_1.setStyleSheet("""background-color: #b4b4b4;""")
 
     def dec_1_btn_released(self):
-        self.dec_1.setStyleSheet("""background-color: rgb(255, 247, 211);""")
+        self.dec_1.setStyleSheet("""background-color: #ffffff;""")
 
     def Inc1_btn_clicked(self):
         # 라디오 1주파수 증가
@@ -349,22 +375,22 @@ border-radius: 20px""")
         pass
 
     def freqInput_pressed(self):
-        self.freqInput_btn.setStyleSheet("""background-color: #adadc8;
+        self.freqInput_btn.setStyleSheet("""background-color: #b4b4b4;
         font: 16pt "휴먼엑스포";""")
 
     def freqInput_released(self):
-        self.freqInput_btn.setStyleSheet("""background-color: rgb(220, 220, 255);
+        self.freqInput_btn.setStyleSheet("""background-color: #ffffff;
         font: 16pt "휴먼엑스포";""")
 
     def freqInput_clicked(self):
         pass
 
     def radioClose_btn_pressed(self):
-        self.radioClose_btn.setStyleSheet("""background-color: #9b9bb4;
+        self.radioClose_btn.setStyleSheet("""background-color: #b4b4b4;
         font: 16pt "휴먼엑스포";""")
 
     def radioClose_btn_released(self):
-        self.radioClose_btn.setStyleSheet("""background-color: rgb(220, 220, 255);
+        self.radioClose_btn.setStyleSheet("""background-color: #ffffff;
         font: 16pt "휴먼엑스포";""")
 
     def radioClose_btn_clicked(self):
@@ -411,6 +437,7 @@ border-radius: 20px""")
                 self.name_label.setText(listedMsg[2])
                 self.phone_label.setText(self.phone)
                 self.back_to_main()
+                self.dataTimer.start()
                 self.warn_msg.setVisible(False)
                 self.lineEdit_2.setEnabled(True)
                 self.login_btn.setEnabled(True)
@@ -635,5 +662,5 @@ class MqttClient(QtCore.QObject):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     myWindow = MyWindow()
-    myWindow.showFullScreen()
+    myWindow.show()#FullScreen()
     app.exec_()
