@@ -1,5 +1,4 @@
 import sys
-import time
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtGui, QtWidgets, QtCore
@@ -14,20 +13,26 @@ class MyWindow(QMainWindow, form_class):
         self.ti_count = 5
 
         self.setupUi(self)
-        self.device_id = 10001
 
         self.mainFrame.raise_()
         self.loginFrame.raise_()
 
         # mqtt 세팅
+        self.device_id = 10001
         self.pub_topic = "asdf"
         self.sub_topic = "zxcv"
         self.phone = ""
 
-        self.broadcastTitle = stack()
-        self.broadcastContents = stack()
-        self.file_id = stack()
+        self.broadcastTitle = myArray()
+        self.broadcastContents = myArray()
+        self.file_id = myArray()
         self.broadcastList = [self.broadcastTitle,self.broadcastContents,self.file_id]
+
+        self.tem = 0
+        self.hum = 0
+        self.vib = 0
+        self.gas = 0
+        self.strange = 0
 
         # 로그인 요청 : SETTING/DEVICE_ID/PHONE_NUMBER
 
@@ -75,6 +80,12 @@ class MyWindow(QMainWindow, form_class):
         self.timer = QTimer(self)
         self.timer.setInterval(1000)
         self.timer.timeout.connect(self.timeout)
+
+        # 데이터 전송 타이머
+        self.dataTimer = QTimer(self)
+        self.dataTimer.setInterval(10000)
+        self.dataTimer.timeout.connect(self.dataInfo)
+        self.dataTimer.start()
 
         # 라디오
         self.Inc1.pressed.connect(self.Inc1_btn_pressed)
@@ -134,6 +145,7 @@ class MyWindow(QMainWindow, form_class):
 	padding: 70px""")
 
     def emergency_btn_clicked(self):
+        self.emerFrame.raise_()
         self.ti_count = 5
         self.mainFrame.setEnabled(False)
         self.countdown.setText(str(self.ti_count))
@@ -141,10 +153,9 @@ class MyWindow(QMainWindow, form_class):
 
     def emer_cancel_btn_clicked(self):
         self.timer.stop()
-        self.mainFrame.raise_()
         self.ti_count = 5
         self.countdown.setText(str(self.ti_count))
-        self.mainFrame.setEnabled(True)
+        self.back_to_main()
 
     def broadcastPlay_btn_pressed(self):
         self.broadcastPlay_btn.setStyleSheet("""background-color: #963a1b;
@@ -168,6 +179,7 @@ class MyWindow(QMainWindow, form_class):
 
     def broadcastPlay_btn_clicked(self):
         self.mainFrame.setEnabled(False)
+        self.playFrame.raise_()
         if self.broadcastContents.isEmpty() :
             self.mainFrame.raise_()
             self.mainFrame.setEnabled(True)
@@ -201,6 +213,7 @@ class MyWindow(QMainWindow, form_class):
 
     def radio_btn_clicked(self):
         self.mainFrame.setEnabled(False)
+        self.radioFrame.raise_()
 
     def broadcastList_btn_pressed(self):
         self.broadcastList_btn.setStyleSheet("""background-color: #2f1632;
@@ -225,6 +238,7 @@ class MyWindow(QMainWindow, form_class):
     def broadcastList_btn_clicked(self):
         self.mainFrame.setEnabled(False)
         self.broadcast_list()
+        self.listFrame.raise_()
 
     def back_to_main(self):
         self.mainFrame.raise_()
@@ -258,7 +272,7 @@ border-radius: 20px""")
 font: 18pt "휴먼둥근헤드라인";
 border-radius: 20px""")
 
-    # 타이머
+    # 긴급 호출 타이머
     def timeout(self):
         i = self.time_count()
         if i == 0:
@@ -272,6 +286,10 @@ border-radius: 20px""")
         self.ti_count -= 1
         self.countdown.setText(str(self.ti_count))
         return self.ti_count
+
+    # 데이터 전송 타이머
+    def dataInfo(self):
+        self.publish_msg("DETECT/{}/{}/{}/{}/{}/{}".format(self.device_id,self.tem,self.hum,self.vib,self.gas,self.strange))
 
     # 라디오
     def Inc1_btn_pressed(self):
@@ -334,19 +352,17 @@ border-radius: 20px""")
         font: 16pt "휴먼엑스포";""")
 
     def radioClose_btn_clicked(self):
-        pass
+        self.mainFrame.raise_()
 
     # 방송 리스트
     def broadcast_list(self):
         length = self.broadcastTitle.getLength()
-        if length == 0:
-            pass
         # Create QListWidget
         for title_num in range(0,length):
             # Create QCustomQWidget
             myQCustomQWidget = QCustomQWidget()
-            myQCustomQWidget.setTextUp(str(self.broadcastTitle.getPop()))
-            myQCustomQWidget.setTextDown(str(self.broadcastContents.getPop()))
+            myQCustomQWidget.setTextUp(self.broadcastTitle.getItem(title_num))
+            myQCustomQWidget.setTextDown(self.broadcastContents.getItem(title_num))
             # Create QListWidgetItem
             myQListWidgetItem = QtWidgets.QListWidgetItem(self.listWidget)  # QtWidgets
             # Set size hint
@@ -375,7 +391,7 @@ border-radius: 20px""")
             else :
                 self.name_label.setText(listedMsg[2])
                 self.phone_label.setText(self.phone)
-                self.mainFrame.raise_()
+                self.back_to_main()
                 self.warn_msg.setVisible(False)
                 self.lineEdit_2.setEnabled(True)
                 self.login_btn.setEnabled(True)
@@ -397,7 +413,11 @@ class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
         super(QCustomQWidget, self).__init__(parent)
         self.textQVBoxLayout = QtWidgets.QVBoxLayout()          # QtWidgets
         self.textUpQLabel    = QtWidgets.QLabel()               # QtWidgets
+        self.textUpQLabel.setFixedWidth(800)
+        self.textUpQLabel.setFixedHeight(40)
         self.textDownQLabel  = QtWidgets.QLabel()               # QtWidgets
+        self.textDownQLabel.setFixedWidth(800)
+        self.textDownQLabel.setFixedHeight(40)
         self.textQVBoxLayout.addWidget(self.textUpQLabel)
         self.textQVBoxLayout.addWidget(self.textDownQLabel)
         self.allQHBoxLayout  = QtWidgets.QHBoxLayout()          # QtWidgets
@@ -423,25 +443,17 @@ class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
     def setTextDown (self, text):
         self.textDownQLabel.setText(text)
 
-class stack:
+class myArray:
     def __init__(self):
         self.items =[]
         self.length = 0
     def push(self,item):
         self.length += 1
-        self.items.append(item)
-    def pop(self):
-        self.length -= 1
-        return self.items.pop()
-    def getPop(self):
-        item = self.pop()
-        self.push(item)
-        return item
-    def peek(self):
-        return self[0]
+        self.items.insert(0,str(item))
+    def getItem(self,index):
+        return self.items[index]
     def isEmpty(self):
-        if self.length == 0 :
-            return 1
+        if self.length == 0: return 1
         else: return 0
     def getLength(self):
         return self.length
