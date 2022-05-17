@@ -2,9 +2,13 @@ import sys
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from PyQt5 import uic, QtGui, QtWidgets, QtCore
+from google.cloud import texttospeech
+from google.oauth2 import service_account
 import paho.mqtt.client as mqtt
+import pygame
 
 form_class = uic.loadUiType("broadcast.ui")[0]
+
 
 class MyWindow(QMainWindow, form_class):
     def __init__(self):
@@ -26,7 +30,7 @@ class MyWindow(QMainWindow, form_class):
         self.broadcastTitle = myArray()
         self.broadcastContents = myArray()
         self.file_id = myArray()
-        self.broadcastList = [self.broadcastTitle,self.broadcastContents,self.file_id]
+        self.broadcastList = [self.broadcastTitle, self.broadcastContents, self.file_id]
 
         self.tem = 0
         self.hum = 0
@@ -48,6 +52,8 @@ class MyWindow(QMainWindow, form_class):
         # 방송 정상 수신 : REPLY/DEVICE_ID/방송 제목/응답 종류/FILE_ID
         #     응답 종류 0 : 방송 정상 수신 , 응답 종류 1 : 방송 확인
 
+        # play
+        # set GOOGLE_APPLICATION_CREDENTIALS=C:\Users\quokka\Desktop\서재혁\세종대\4-3\tough-bindery-350503-a801cd823b8f.json
 
         # 로그인 페이지
         self.warn_msg.setVisible(False)
@@ -64,7 +70,7 @@ class MyWindow(QMainWindow, form_class):
         self.broadcastPlay_btn.pressed.connect(self.broadcastPlay_btn_pressed)
         self.broadcastPlay_btn.released.connect(self.broadcastPlay_btn_released)
         self.broadcastPlay_btn.clicked.connect(self.broadcastPlay_btn_clicked)
-        self.play_cancel.clicked.connect(self.back_to_main)
+        self.play_cancel.clicked.connect(self.play_cancel_clicked)
 
         self.radio_btn.pressed.connect(self.radio_btn_pressed)
         self.radio_btn.released.connect(self.radio_btn_released)
@@ -121,7 +127,14 @@ class MyWindow(QMainWindow, form_class):
         self.client.connectToHost()
 
 
-    # 메인 페이지
+        # 방송 재생 TTS setting
+        credentials = service_account.Credentials.from_service_account_file(
+            'C:/Users/quokka/Desktop/서재혁/세종대/4-3/tough-bindery-350503-a801cd823b8f.json')
+        # Instantiates a client
+        self.client_tts = texttospeech.TextToSpeechClient(credentials=credentials)
+
+        # 메인 페이지
+
     def emergency_btn_pressed(self):
         self.emerFrame.raise_()
         self.emergency_btn.setStyleSheet("""background-color: #962321;
@@ -180,12 +193,14 @@ class MyWindow(QMainWindow, form_class):
     def broadcastPlay_btn_clicked(self):
         self.mainFrame.setEnabled(False)
         self.playFrame.raise_()
-        if self.broadcastContents.isEmpty() :
+        if self.broadcastContents.isEmpty():
             self.mainFrame.raise_()
             self.mainFrame.setEnabled(True)
-        else :
+        else:
             # TTS
-            self.playFrame.raise_()
+            pygame.mixer.init(16000, -16, 1, 2048)
+            pygame.mixer.music.load("output.mp3")
+            pygame.mixer.music.play()
 
     def radio_btn_pressed(self):
         self.radio_btn.setStyleSheet("""background-color: #163218;
@@ -240,6 +255,11 @@ class MyWindow(QMainWindow, form_class):
         self.broadcast_list()
         self.listFrame.raise_()
 
+    def play_cancel_clicked(self):
+        pygame.mixer.music.stop()
+        self.mainFrame.raise_()
+        self.mainFrame.setEnabled(True)
+
     def back_to_main(self):
         self.mainFrame.raise_()
         self.mainFrame.setEnabled(True)
@@ -250,13 +270,14 @@ class MyWindow(QMainWindow, form_class):
         if phone_num.isnumeric():
             self.lineEdit_2.setEnabled(False)
             self.login_btn.setEnabled(False)
-            self.publish_msg("SETTING/{}/{}".format(self.device_id,phone_num))
+            self.publish_msg("SETTING/{}/{}".format(self.device_id, phone_num))
             if len(phone_num) == 11:
                 self.phone = phone_num[0:3] + '-' + phone_num[3:7] + '-' + phone_num[7:]
                 print(self.phone)
             elif len(phone_num) == 10:
-                self.phone = phone_num[0:3] + '-' + phone_num[3:6] + '-' + phone_num[6:] # mqtt를 분석하는 과정으로 전달하는 것이 어렵기 때문에 사용
-        else :
+                self.phone = phone_num[0:3] + '-' + phone_num[3:6] + '-' + phone_num[
+                                                                           6:]  # mqtt를 분석하는 과정으로 전달하는 것이 어렵기 때문에 사용
+        else:
             self.warn_msg.setVisible(True)
             self.warn_msg.setText("형식이 올바르지 않습니다")
             self.lineEdit_2.setEnabled(True)
@@ -271,6 +292,35 @@ border-radius: 20px""")
         self.login_btn.setStyleSheet("""background-color: rgb(155, 200, 255);
 font: 18pt "휴먼둥근헤드라인";
 border-radius: 20px""")
+
+    # TTS 재생 세팅 함수
+    def setting_tts(self):
+        # Set the text input to be synthesized
+        self.synthesis_input_tts = texttospeech.SynthesisInput(
+            text="{} {}".format(self.broadcastTitle.getItem(0), self.broadcastContents.getItem(0)))
+
+        # Build the voice request, select the language code ("en-US") and the ssml
+        # voice gender ("neutral")
+        self.voice_tts = texttospeech.VoiceSelectionParams(
+            language_code="ko-KR", ssml_gender=texttospeech.SsmlVoiceGender.NEUTRAL
+        )
+
+        # Select the type of audio file you want returned
+        self.audio_config_tts = texttospeech.AudioConfig(
+            audio_encoding=texttospeech.AudioEncoding.MP3
+        )
+
+        # Perform the text-to-speech request on the text input with the selected
+        # voice parameters and audio file type
+        self.response_tts = self.client_tts.synthesize_speech(
+            input=self.synthesis_input_tts, voice=self.voice_tts, audio_config=self.audio_config_tts
+        )
+
+        # The response's audio_content is binary.
+        with open("output.mp3", "wb") as out:
+            # Write the response to the output file.
+            out.write(self.response_tts.audio_content)
+            print('Audio content written to file "output.mp3"')
 
     # 긴급 호출 타이머
     def timeout(self):
@@ -289,7 +339,8 @@ border-radius: 20px""")
 
     # 데이터 전송 타이머
     def dataInfo(self):
-        self.publish_msg("DETECT/{}/{}/{}/{}/{}/{}".format(self.device_id,self.tem,self.hum,self.vib,self.gas,self.strange))
+        self.publish_msg(
+            "DETECT/{}/{}/{}/{}/{}/{}".format(self.device_id, self.tem, self.hum, self.vib, self.gas, self.strange))
 
     # 라디오
     def Inc1_btn_pressed(self):
@@ -358,8 +409,9 @@ border-radius: 20px""")
     def broadcast_list(self):
         length = self.broadcastTitle.getLength()
         # Create QListWidget
-        for title_num in range(0,length):
-            # Create QCustomQWidget
+        self.listWidget.clear()
+        # Create QCustomQWidget
+        for title_num in range(0,length) :
             myQCustomQWidget = QCustomQWidget()
             myQCustomQWidget.setTextUp(self.broadcastTitle.getItem(title_num))
             myQCustomQWidget.setTextDown(self.broadcastContents.getItem(title_num))
@@ -371,13 +423,13 @@ border-radius: 20px""")
             self.listWidget.addItem(myQListWidgetItem)
             self.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
 
-
     # MQTT - sub and sub_msg
     @QtCore.pyqtSlot(int)
     def on_stateChanged(self, state):
         if state == MqttClient.Connected:
             print(state)
             self.client.subscribe(self.sub_topic)
+
 
     @QtCore.pyqtSlot(str)
     def on_messageSignal(self, msg):
@@ -388,7 +440,7 @@ border-radius: 20px""")
                 self.warn_msg.setText("번호가 존재하지 않습니다")
                 self.lineEdit_2.setEnabled(True)
                 self.login_btn.setEnabled(True)
-            else :
+            else:
                 self.name_label.setText(listedMsg[2])
                 self.phone_label.setText(self.phone)
                 self.back_to_main()
@@ -401,26 +453,29 @@ border-radius: 20px""")
             self.broadcastTitle.push(listedMsg[1])
             self.broadcastContents.push(listedMsg[2])
             self.file_id.push(listedMsg[3])
-        else :
+            self.setting_tts()
+        else:
             pass
 
-    def publish_msg(self,msg):
-        self.client.publish(self.pub_topic,msg)
+
+    def publish_msg(self, msg):
+        self.client.publish(self.pub_topic, msg)
+
 
 # 방송 리스트
-class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
-    def __init__ (self, parent = None):
+class QCustomQWidget(QtWidgets.QWidget):  # QtWidgets
+    def __init__(self, parent=None):
         super(QCustomQWidget, self).__init__(parent)
-        self.textQVBoxLayout = QtWidgets.QVBoxLayout()          # QtWidgets
-        self.textUpQLabel    = QtWidgets.QLabel()               # QtWidgets
+        self.textQVBoxLayout = QtWidgets.QVBoxLayout()  # QtWidgets
+        self.textUpQLabel = QtWidgets.QLabel()  # QtWidgets
         self.textUpQLabel.setFixedWidth(800)
         self.textUpQLabel.setFixedHeight(40)
-        self.textDownQLabel  = QtWidgets.QLabel()               # QtWidgets
+        self.textDownQLabel = QtWidgets.QLabel()  # QtWidgets
         self.textDownQLabel.setFixedWidth(800)
         self.textDownQLabel.setFixedHeight(40)
         self.textQVBoxLayout.addWidget(self.textUpQLabel)
         self.textQVBoxLayout.addWidget(self.textDownQLabel)
-        self.allQHBoxLayout  = QtWidgets.QHBoxLayout()          # QtWidgets
+        self.allQHBoxLayout = QtWidgets.QHBoxLayout()  # QtWidgets
         self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
         self.setLayout(self.allQHBoxLayout)
         # setStyleSheet
@@ -437,26 +492,34 @@ class QCustomQWidget (QtWidgets.QWidget):                       # QtWidgets
             background: transparent;
         ''')
 
-    def setTextUp (self, text):
+    def setTextUp(self, text):
         self.textUpQLabel.setText(text)
 
-    def setTextDown (self, text):
+    def setTextDown(self, text):
         self.textDownQLabel.setText(text)
+
 
 class myArray:
     def __init__(self):
-        self.items =[]
+        self.items = []
         self.length = 0
-    def push(self,item):
+
+    def push(self, item):
         self.length += 1
-        self.items.insert(0,str(item))
-    def getItem(self,index):
+        self.items.insert(0, str(item))
+
+    def getItem(self, index):
         return self.items[index]
+
     def isEmpty(self):
-        if self.length == 0: return 1
-        else: return 0
+        if self.length == 0:
+            return 1
+        else:
+            return 0
+
     def getLength(self):
         return self.length
+
 
 # MQTT
 class MqttClient(QtCore.QObject):
@@ -490,12 +553,11 @@ class MqttClient(QtCore.QObject):
 
         self.m_state = MqttClient.Disconnected
 
-        self.m_client =  mqtt.Client(clean_session=self.m_cleanSession, protocol=self.protocolVersion)
+        self.m_client = mqtt.Client(clean_session=self.m_cleanSession, protocol=self.protocolVersion)
 
         self.m_client.on_connect = self.on_connect
         self.m_client.on_message = self.on_message
         self.m_client.on_disconnect = self.on_disconnect
-
 
     @QtCore.pyqtProperty(int, notify=stateChanged)
     def state(self):
@@ -563,8 +625,8 @@ class MqttClient(QtCore.QObject):
     def connectToHost(self):
         if self.m_hostname:
             self.m_client.connect(self.m_hostname,
-                port=self.port,
-                keepalive=self.keepAlive)
+                                  port=self.port,
+                                  keepalive=self.keepAlive)
 
             self.state = MqttClient.Connecting
             self.m_client.loop_start()
@@ -577,8 +639,8 @@ class MqttClient(QtCore.QObject):
         if self.state == MqttClient.Connected:
             self.m_client.subscribe(path)
 
-    def publish(self, topic,payload=None,qos=0,retain=False):
-        self.m_client.publish(topic,payload,qos,retain)
+    def publish(self, topic, payload=None, qos=0, retain=False):
+        self.m_client.publish(topic, payload, qos, retain)
 
     #################################################################
     # callbacks
@@ -596,6 +658,7 @@ class MqttClient(QtCore.QObject):
         # print("on_disconnect", args)
         self.state = MqttClient.Disconnected
         self.disconnected.emit()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
