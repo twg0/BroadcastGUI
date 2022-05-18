@@ -6,11 +6,11 @@ import boto3
 import paho.mqtt.client as mqtt
 import pygame
 import radio
-#import sensorModule as ssM
+import time
+import socket
+import sensorModule as ssM
 
 form_class = uic.loadUiType("broadcast.ui")[0]
-
-
 
 class MyWindow(QMainWindow, form_class):
     def __init__(self):
@@ -32,7 +32,7 @@ class MyWindow(QMainWindow, form_class):
         self.broadcastTitle = myArray()
         self.broadcastContents = myArray()
         self.file_id = myArray()
-        self.broadcastList = [self.broadcastTitle, self.broadcastContents, self.file_id]
+        self.checkArray = myArray()
 
         self.tem = 0
         self.hum = 0
@@ -66,26 +66,44 @@ class MyWindow(QMainWindow, form_class):
         self.login_btn.released.connect(self.login_btn_released)
         self.login_btn.clicked.connect(self.login_btn_clicked)
 
+        # 알림 창
+        self.widget_2.setVisible(False)
+        
+        self.pushButton.pressed.connect(self.pushButton_pressed)
+        self.pushButton.released.connect(self.pushButton_released)
+        self.pushButton.clicked.connect(self.checking)
+        self.cur = -1 # 방금 확인한 내용
+        
         # 메인 페이지
+        self.emerFrame.raise_()
+        self.emerFrame.setVisible(False)
         self.emergency_btn.pressed.connect(self.emergency_btn_pressed)
         self.emergency_btn.released.connect(self.emergency_btn_released)
         self.emergency_btn.clicked.connect(self.emergency_btn_clicked)
         self.emer_cancel.clicked.connect(self.emer_cancel_btn_clicked)
 
+        self.playFrame.raise_()
+        self.playFrame.setVisible(False)
         self.broadcastPlay_btn.pressed.connect(self.broadcastPlay_btn_pressed)
         self.broadcastPlay_btn.released.connect(self.broadcastPlay_btn_released)
         self.broadcastPlay_btn.clicked.connect(self.broadcastPlay_btn_clicked)
         self.play_cancel.clicked.connect(self.play_cancel_clicked)
 
+        self.radioFrame.raise_()
+        self.radioFrame.setVisible(False)
         self.radio_btn.pressed.connect(self.radio_btn_pressed)
         self.radio_btn.released.connect(self.radio_btn_released)
         self.radio_btn.clicked.connect(self.radio_btn_clicked)
-        self.radioClose_btn.clicked.connect(self.back_to_main)
 
+        self.listFrame.raise_()
+        self.listFrame.setVisible(False)
         self.broadcastList_btn.pressed.connect(self.broadcastList_btn_pressed)
         self.broadcastList_btn.released.connect(self.broadcastList_btn_released)
         self.broadcastList_btn.clicked.connect(self.broadcastList_btn_clicked)
-        self.listClose_btn.clicked.connect(self.back_to_main)
+        
+        self.listClose_btn.pressed.connect(self.listClose_btn_pressed)
+        self.listClose_btn.released.connect(self.listClose_btn_released)
+        self.listClose_btn.clicked.connect(self.listClose_btn_clicked)
 
         # 긴급 호출 타이머
         self.timer = QTimer(self)
@@ -97,11 +115,37 @@ class MyWindow(QMainWindow, form_class):
         self.dataTimer.setInterval(10000)
         self.dataTimer.timeout.connect(self.dataInfo)
         
+        # 방송 재생
+        pygame.mixer.init()
+        
+        # 방송 재생 타이머
+        self.playTimer = QTimer(self)
+        self.playTimer.setInterval(1000)
+        self.playTimer.timeout.connect(self.playtime)
+        
+        # 시간 타이머
+        self.timeTimer = QTimer(self)
+        self.timeTimer.setInterval(500)
+        self.timeTimer.timeout.connect(self.timeTime)
+        self.timeTimer.start()
+        self.ticTok = 0
 
         # 리스트
+        self.widget.raise_()
+        self.widget.setVisible(False)
         self.listWidget.itemClicked.connect(self.listItem_clicked)
+        self.listWidget.currentItemChanged.connect(self.listItem_clicked)
+        
+        self.widget_close.pressed.connect(self.widget_close_pressed)
+        self.widget_close.released.connect(self.widget_close_released)
+        self.widget_close.clicked.connect(self.widget_close_clicked)
+        
+        self.listContent.setWordWrap(True)
 
         # 라디오
+        self.frequency = 91.9
+        self.curFrequency.setText("{}".format(self.frequency))
+        
         self.Inc1.pressed.connect(self.Inc1_btn_pressed)
         self.Inc1.released.connect(self.Inc1_btn_released)
         self.Inc1.clicked.connect(self.Inc1_btn_clicked)
@@ -125,6 +169,14 @@ class MyWindow(QMainWindow, form_class):
         self.radioClose_btn.pressed.connect(self.radioClose_btn_pressed)
         self.radioClose_btn.released.connect(self.radioClose_btn_released)
         self.radioClose_btn.clicked.connect(self.radio_cancel)
+        
+        self.radio_on.pressed.connect(self.radio_on_pressed)
+        self.radio_on.released.connect(self.radio_on_released)
+        self.radio_on.clicked.connect(self.radio_on_clicked)
+        
+        self.radio_off.pressed.connect(self.radio_off_pressed)
+        self.radio_off.released.connect(self.radio_off_released)
+        self.radio_off.clicked.connect(self.radio_off_clicked)
 
         # MQTT 1은 sub 2는 pub
         self.client = MqttClient(self)
@@ -134,9 +186,35 @@ class MyWindow(QMainWindow, form_class):
         self.client.hostname = "58.124.114.104"
         self.client.connectToHost()
 
+    # 알림 창----------------------
+    def checking(self):
+        self.checkArray.setFlag(self.cur)
+        self.publish_msg("REPLY/{}/{}/{}/{}".format(self.device_id,self.broadcastTitle.getItem(0),0,self.file_id.getItem(0)))
+        for i in range(0,self.checkArray.getReadIndex()):
+            if self.checkArray.getItem(i) == 0:
+                self.make_note()
+                return
+        self.checkArray.clear()
+        self.widget_2.setVisible(False)
+    
+    def make_note(self):
+        self.cur = -1
+        for i in range(0,self.checkArray.getReadIndex()):
+            if self.checkArray.getItem(i) == 0 and self.cur == -1 : self.cur = i
+        print("호출 {} ".format(self.cur))
+        self.widget_2.setVisible(True)
+        self.label_3.setText(self.broadcastTitle.getItem(self.cur))
+        self.label_8.setText(self.broadcastContents.getItem(self.cur))
+        self.label_9.setText("{}/{}".format(self.cur + 1,self.checkArray.getReadIndex()))
+        
+    def pushButton_pressed(self):
+        self.pushButton.setStyleSheet("""background-color: rgb(184,200,174)""")
+    
+    def pushButton_released(self):
+        self.pushButton.setStyleSheet("")
+    
     # 메인 페이지
     def emergency_btn_pressed(self):
-        self.emerFrame.raise_()
         self.emergency_btn.setStyleSheet("""background-color: #962321;
     border-style: outset;
     border-width: 2px;
@@ -158,7 +236,7 @@ class MyWindow(QMainWindow, form_class):
 	padding: 70px""")
 
     def emergency_btn_clicked(self):
-        self.emerFrame.raise_()
+        self.emerFrame.setVisible(True)
         self.ti_count = 5
         self.mainFrame.setEnabled(False)
         self.countdown.setText(str(self.ti_count))
@@ -168,7 +246,8 @@ class MyWindow(QMainWindow, form_class):
         self.timer.stop()
         self.ti_count = 5
         self.countdown.setText(str(self.ti_count))
-        self.back_to_main()
+        self.emerFrame.setVisible(False)
+        self.mainFrame.setEnabled(True)
 
     def broadcastPlay_btn_pressed(self):
         self.broadcastPlay_btn.setStyleSheet("""background-color: #963a1b;
@@ -191,17 +270,16 @@ class MyWindow(QMainWindow, form_class):
     padding: 5px;""")
 
     def broadcastPlay_btn_clicked(self):
-        self.mainFrame.setEnabled(False)
-        self.playFrame.raise_()
-        if self.broadcastContents.isEmpty():
-            self.mainFrame.raise_()
-            self.mainFrame.setEnabled(True)
+        if self.broadcastContents.isEmpty(): pass
         else:
             # TTS
-            pygame.mixer.init()
+            self.playFrame.setVisible(True)
+            self.mainFrame.setEnabled(False)
             pygame.mixer.music.load("output.mp3")
             pygame.mixer.music.play()
+            self.playTimer.start()
 
+        
     def radio_btn_pressed(self):
         self.radio_btn.setStyleSheet("""background-color: #163218;
 	selection-background-color: rgb(255, 131, 131);
@@ -228,13 +306,12 @@ class MyWindow(QMainWindow, form_class):
 
     def radio_btn_clicked(self):
         self.mainFrame.setEnabled(False)
-        self.radioFrame.raise_()
-        radio.radio_start()
+        self.radioFrame.setVisible(True)
         
     def radio_cancel(self):
         radio.mute()
         self.mainFrame.setEnabled(True)
-        self.mainFrame.raise_()
+        self.radioFrame.setVisible(False)
 
     def broadcastList_btn_pressed(self):
         self.broadcastList_btn.setStyleSheet("""background-color: #2f1632;
@@ -259,15 +336,24 @@ class MyWindow(QMainWindow, form_class):
     def broadcastList_btn_clicked(self):
         self.mainFrame.setEnabled(False)
         self.broadcast_list()
-        self.listFrame.raise_()
+        self.listFrame.setVisible(True)
 
+    def listClose_btn_pressed(self):
+        self.listClose_btn.setStyleSheet("""background-color: #5e9cb4;
+border-radius: 10px;""")
+    
+    def listClose_btn_released(self):
+        self.listClose_btn.setStyleSheet("""background-color: rgb(134,219,255);
+border-radius: 10px;""")
+    
+    def listClose_btn_clicked(self):
+        self.listFrame.setVisible(False)
+        self.mainFrame.setEnabled(True)
+        
     def play_cancel_clicked(self):
         pygame.mixer.music.stop()
-        self.mainFrame.raise_()
-        self.mainFrame.setEnabled(True)
-
-    def back_to_main(self):
-        self.mainFrame.raise_()
+        self.playTimer.stop()
+        self.playFrame.setVisible(False)
         self.mainFrame.setEnabled(True)
 
     # 로그인
@@ -312,7 +398,7 @@ border-radius: 20px""")
         i = self.time_count()
         if i == 0:
             self.timer.stop()
-            self.mainFrame.raise_()
+            self.emerFrame.setVisible(False)
             self.mainFrame.setEnabled(True)
             self.ti_count = 5
             self.countdown.setText(str(self.ti_count))
@@ -325,15 +411,50 @@ border-radius: 20px""")
 
     # 데이터 전송 타이머
     def dataInfo(self):
-#         result = ssM.sensor()
-#         self.tem = result[0]
-#         self.hum = result[1]
-#         self.gas = result[2]
+        result = ssM.sensor()
+        self.tem = result[0]
+        self.hum = result[1]
+        self.gas = result[2]
         self.publish_msg(
             "DETECT/{}/{}/{}/{}/{}/{}".format(self.device_id, self.tem, self.hum, self.vib, self.gas, self.strange))
 
+    # 재생 타이머
+    def playtime(self):
+        if not pygame.mixer.music.get_busy():
+            self.playTimer.stop()
+            self.playFrame.setVisible(False)
+            self.mainFrame.setEnabled(True)
+            
+    # 시간 타이머
+    def timeTime(self):
+        curTime = time.localtime(time.time())
+        year = curTime.tm_year % 100
+        mon = curTime.tm_mon
+        day = curTime.tm_mday
+        h = curTime.tm_hour
+        m = curTime.tm_min
+        w = curTime.tm_wday
+        wday = ""
+        if w == 0: wday = "월"
+        elif w == 1: wday = "화"
+        elif w == 2: wday = "수"
+        elif w == 3: wday = "목"
+        elif w == 4: wday = "금"
+        elif w == 5: wday = "토"
+        else : wday = "일"
+        if self.ticTok == 0:
+            self.timeLabel.setText("{}년 {}월 {}일 {}요일 {} : {}".format(year,mon,day,wday,h,m))
+            self.ticTok = 1
+        else :
+            self.timeLabel.setText("{}년 {}월 {}일 {}요일 {}   {}".format(year,mon,day,wday,h,m))
+            self.ticTok = 0
+        ipAddress = socket.gethostbyname(socket.gethostname())
+        if ipAddress == "127.0.0.1":
+            self.network_sig.setStyleSheet("image:url(:/newPrefix/red.png)")
+        else :
+            self.network_sig.setStyleSheet("image:url(:/newPrefix/green.png)")
+        
     # 라디오
-    
     def Inc1_btn_pressed(self):
         self.Inc1.setStyleSheet("""background-color: #b4b4b4;""")
 
@@ -360,19 +481,27 @@ border-radius: 20px""")
 
     def Inc1_btn_clicked(self):
         # 라디오 1주파수 증가
-        pass
+        self.frequency += 1
+        self.curFrequency.setText("%.1f" % self.frequency)
+        radio.set_freq(self.frequency)
 
     def inc_1_btn_clicked(self):
         # 라디오 0.1주파수 증가
-        pass
+        self.frequency += 0.1
+        self.curFrequency.setText("%.1f" % self.frequency)
+        radio.set_freq(self.frequency)
 
     def dec1_btn_clicked(self):
         # 라디오 1주파수 감소
-        pass
+        self.frequency -= 1
+        self.curFrequency.setText("%.1f" % self.frequency)
+        radio.set_freq(self.frequency)
 
     def dec_1_btn_clicked(self):
         # 라디오 0.1주파수 감소
-        pass
+        self.frequency -= 0.1
+        self.curFrequency.setText("%.1f" % self.frequency)
+        radio.set_freq(self.frequency)
 
     def freqInput_pressed(self):
         self.freqInput_btn.setStyleSheet("""background-color: #b4b4b4;
@@ -383,7 +512,9 @@ border-radius: 20px""")
         font: 16pt "휴먼엑스포";""")
 
     def freqInput_clicked(self):
-        pass
+        freq = self.lineEdit.text()
+        radio.set_freq(float(freq))
+        self.curFrequency.setText("%.1f" % freq)
 
     def radioClose_btn_pressed(self):
         self.radioClose_btn.setStyleSheet("""background-color: #b4b4b4;
@@ -393,9 +524,31 @@ border-radius: 20px""")
         self.radioClose_btn.setStyleSheet("""background-color: #ffffff;
         font: 16pt "휴먼엑스포";""")
 
-    def radioClose_btn_clicked(self):
-        self.mainFrame.raise_()
+    def radio_on_pressed(self):
+        self.radio_on.setStyleSheet("""background-color: #b4b4b4;
+        font: 16pt "휴먼엑스포";""")
 
+    def radio_on_released(self):
+        self.radio_on.setStyleSheet("""background-color: #ffffff;
+        font: 16pt "휴먼엑스포";""")
+
+    def radio_on_clicked(self):
+        radio.radio_start()
+        self.radio_on.setEnabled(False)
+        
+    def radio_off_pressed(self):
+        self.radio_off.setStyleSheet("""background-color: #b4b4b4;
+        font: 16pt "휴먼엑스포";""")
+
+    def radio_off_released(self):
+        self.radio_off.setStyleSheet("""background-color: #ffffff;
+        font: 16pt "휴먼엑스포";""")
+
+    def radio_off_clicked(self):
+        radio.mute()
+        self.radio_on.setEnabled(True)
+        
+        
     # 방송 리스트
     def broadcast_list(self):
         length = self.broadcastTitle.getLength()
@@ -415,7 +568,24 @@ border-radius: 20px""")
             self.listWidget.setItemWidget(myQListWidgetItem, myQCustomQWidget)
 
     def listItem_clicked(self):
-        pass
+        index = self.listWidget.currentRow()
+        self.listTitle.setText(self.broadcastTitle.getItem(index))
+        self.listContent.setText(self.broadcastContents.getItem(index))
+        self.widget.setVisible(True)
+        
+    def widget_close_pressed(self):
+        self.widget_close.setStyleSheet("""background-color: #69adc8;
+border: 2px solid black;
+border-radius: 10px""")
+    
+    def widget_close_released(self):
+        self.widget_close.setStyleSheet("""background-color: rgb(155, 200, 255);
+border: 2px solid black;
+border-radius: 10px""")
+    
+    def widget_close_clicked(self):
+        self.widget.setVisible(False)
+    
     # MQTT - sub and sub_msg
     @QtCore.pyqtSlot(int)
     def on_stateChanged(self, state):
@@ -436,7 +606,8 @@ border-radius: 20px""")
             else:
                 self.name_label.setText(listedMsg[2])
                 self.phone_label.setText(self.phone)
-                self.back_to_main()
+                self.loginFrame.setVisible(False)
+                self.mainFrame.setEnabled(True)
                 self.dataTimer.start()
                 self.warn_msg.setVisible(False)
                 self.lineEdit_2.setEnabled(True)
@@ -447,7 +618,10 @@ border-radius: 20px""")
             self.broadcastTitle.push(listedMsg[1])
             self.broadcastContents.push(listedMsg[2])
             self.file_id.push(listedMsg[3])
+            self.checkArray.pushFlag()
+            self.make_note()
             self.setting_tts()
+            self.publish_msg("REPLY/{}/{}/{}/{}".format(self.device_id,self.broadcastTitle.getItem(0),0,self.file_id.getItem(0)))
         else:
             pass
 
@@ -502,22 +676,38 @@ class myArray:
     def __init__(self):
         self.items = []
         self.length = 0
-
+        self.readIndex = 0;
+        
     def push(self, item):
         self.length += 1
         self.items.insert(0, str(item))
-
+        
+    def pushFlag(self):
+        self.items.insert(0, 0)
+        self.setRead(1)
+        
+    def setFlag(self,index):
+        self.items[index] = 1
+        
     def getItem(self, index):
         return self.items[index]
-
+    
     def isEmpty(self):
         if self.length == 0:
             return 1
         else:
             return 0
-
+        
     def getLength(self):
         return self.length
+    
+    def getReadIndex(self):
+        return self.readIndex
+    
+    def clear(self): self.readIndex = 0
+    
+    def setRead(self,index):
+        self.readIndex += index
 
 
 # MQTT
