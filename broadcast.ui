@@ -1180,7 +1180,7 @@ border: 1px solid black;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">border: 3px solid white;
-font: 80 20pt &quot;맑은 고딕&quot;;</string>
+font: 80 22pt &quot;맑은 고딕&quot;;</string>
      </property>
      <property name="text">
       <string>TextLabel</string>
@@ -1200,7 +1200,7 @@ font: 80 20pt &quot;맑은 고딕&quot;;</string>
      </property>
      <property name="styleSheet">
       <string notr="true">border:3px solid white;
-font: 16pt &quot;맑은 고딕&quot;;</string>
+font: 20pt &quot;맑은 고딕&quot;;</string>
      </property>
      <property name="text">
       <string>TextLabel</string>
